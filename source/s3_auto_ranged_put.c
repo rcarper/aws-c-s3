@@ -140,6 +140,9 @@ struct aws_s3_meta_request *aws_s3_meta_request_auto_ranged_put_new(
         goto error_clean_up;
     }
 
+    AWS_LOGF_TRACE(
+        AWS_LS_S3_META_REQUEST, "id=%p Created new Auto-Ranged Put Meta Request.", (void *)meta_request_default);
+
     return &auto_ranged_put->base;
 
 error_clean_up:
@@ -306,16 +309,6 @@ static int s_s3_auto_ranged_put_next_request(
 unlock:
 
     s_s3_auto_ranged_put_unlock_synced_data(auto_ranged_put);
-
-    if (request != NULL) {
-        AWS_LOGF_TRACE(
-            AWS_LS_S3_META_REQUEST,
-            "id=%p: Returning request %p for part %d of %d",
-            (void *)meta_request,
-            (void *)request,
-            request->desc_data.part_number,
-            auto_ranged_put->synced_data.total_num_parts);
-    }
 
     *out_request = request;
 

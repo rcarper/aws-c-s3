@@ -79,7 +79,7 @@ static void s_s3_meta_request_default_unlock_synced_data(struct aws_s3_meta_requ
     aws_mutex_unlock(&meta_request_default->base.synced_data.lock);
 }
 
-/* Allocate a new auto-ranged-get meta request. */
+/* Allocate a new default meta request. */
 struct aws_s3_meta_request *aws_s3_meta_request_default_new(
     struct aws_allocator *allocator,
     const struct aws_s3_meta_request_internal_options *options) {
@@ -95,10 +95,12 @@ struct aws_s3_meta_request *aws_s3_meta_request_default_new(
 
         AWS_LOGF_ERROR(
             AWS_LS_S3_META_REQUEST,
-            "id=%p Could not initialize base type for Auto-Ranged-Get Meta Request.",
+            "id=%p Could not initialize base type for Default Meta Request.",
             (void *)meta_request_default);
         goto error_clean_up;
     }
+
+    AWS_LOGF_TRACE(AWS_LS_S3_META_REQUEST, "id=%p Created new Default Meta Request.", (void *)meta_request_default);
 
     return &meta_request_default->base;
 
@@ -157,10 +159,7 @@ static int s_s3_meta_request_default_next_request(
     s_s3_meta_request_default_unlock_synced_data(meta_request_default);
 
     AWS_LOGF_TRACE(
-        AWS_LS_S3_META_REQUEST,
-        "id=%p: Meta Request Default returning request %p",
-        (void *)meta_request,
-        (void *)request);
+        AWS_LS_S3_META_REQUEST, "id=%p: Meta Request returning request %p", (void *)meta_request, (void *)request);
 
     *out_request = request;
 
@@ -191,11 +190,7 @@ static int s_s3_meta_request_default_prepare_request(
     aws_http_message_release(message);
 
     AWS_LOGF_TRACE(
-        AWS_LS_S3_META_REQUEST,
-        "id=%p: Default Meta Request created request %p for part %d",
-        (void *)meta_request,
-        (void *)request,
-        request->desc_data.part_number);
+        AWS_LS_S3_META_REQUEST, "id=%p: Meta Request created request %p", (void *)meta_request, (void *)request);
 
     return AWS_OP_SUCCESS;
 }
@@ -219,7 +214,10 @@ static int s_s3_meta_request_default_header_block_done(
 
     if (meta_request->headers_callback != NULL) {
         meta_request->headers_callback(
-            meta_request, request->send_data.response_headers, request->send_data.response_status, meta_request->user_data);
+            meta_request,
+            request->send_data.response_headers,
+            request->send_data.response_status,
+            meta_request->user_data);
     }
 
     return AWS_OP_SUCCESS;

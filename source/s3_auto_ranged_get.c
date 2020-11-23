@@ -126,6 +126,9 @@ struct aws_s3_meta_request *aws_s3_meta_request_auto_ranged_get_new(
         goto error_clean_up;
     }
 
+    AWS_LOGF_TRACE(
+        AWS_LS_S3_META_REQUEST, "id=%p Created new Auto-Ranged Get Meta Request.", (void *)meta_request_default);
+
     return &auto_ranged_get->base;
 
 error_clean_up:
@@ -223,16 +226,6 @@ static int s_s3_auto_ranged_get_next_request(
         default:
             AWS_FATAL_ASSERT(false);
             break;
-    }
-
-    if (request != NULL) {
-        AWS_LOGF_TRACE(
-            AWS_LS_S3_META_REQUEST,
-            "id=%p: Returning request %p for part %d of %d",
-            (void *)meta_request,
-            (void *)request,
-            request->desc_data.part_number,
-            auto_ranged_get->synced_data.total_num_parts);
     }
 
     s_s3_auto_ranged_get_unlock_synced_data(auto_ranged_get);
@@ -346,7 +339,8 @@ static int s_s3_auto_ranged_get_header_block_done(
 
     struct aws_byte_cursor content_range_header_value;
 
-    if (aws_http_headers_get(request->send_data.response_headers, g_content_range_header_name, &content_range_header_value)) {
+    if (aws_http_headers_get(
+            request->send_data.response_headers, g_content_range_header_name, &content_range_header_value)) {
         AWS_LOGF_ERROR(
             AWS_LS_S3_META_REQUEST,
             "id=%p Could not find content range header for request %p",
