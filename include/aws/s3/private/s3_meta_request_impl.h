@@ -126,7 +126,7 @@ struct aws_s3_meta_request_vtable {
      * pointer. */
     int (*next_request)(struct aws_s3_meta_request *meta_request, struct aws_s3_request **out_request);
 
-    /* Called when sending of the request has finished. */
+	/* Called when sending of the request has finished. */
     void (*send_request_finish)(
         struct aws_s3_vip_connection *vip_connection,
         struct aws_http_stream *stream,
@@ -243,6 +243,11 @@ struct aws_s3_meta_request *aws_s3_meta_request_auto_ranged_put_new(
     struct aws_allocator *allocator,
     const struct aws_s3_meta_request_internal_options *options);
 
+/* Creates a new default meta request. This will send the request as is and pass back the response. */
+struct aws_s3_meta_request *aws_s3_meta_request_default_new(
+    struct aws_allocator *allocator,
+    const struct aws_s3_meta_request_internal_options *options);
+
 /* Tells the meta request to start sending another request, if there is one currently to send.  This is used by the
  * client.
  */
@@ -319,6 +324,8 @@ void aws_s3_meta_request_handle_error(
 void aws_s3_meta_request_retry_queue_push(struct aws_s3_meta_request *meta_request, struct aws_s3_request *request);
 
 struct aws_s3_request *aws_s3_meta_request_retry_queue_pop_synced(struct aws_s3_meta_request *meta_request);
+
+struct aws_s3_client *aws_s3_meta_request_get_client(struct aws_s3_meta_request *meta_request);
 
 /* END - Exposed only for use in tests */
 
