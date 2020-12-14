@@ -33,7 +33,7 @@ static const uint32_t s_s3_max_request_count_per_connection = 100;
 static const uint16_t s_http_port = 80;
 static const uint16_t s_https_port = 443;
 
-static const uint64_t s_default_part_size = 20 * 1024 * 1024;
+static const size_t s_default_part_size = 20 * 1024 * 1024;
 static const size_t s_default_dns_host_address_ttl_seconds = 2 * 60;
 static const uint32_t s_default_connection_timeout_ms = 3000;
 static const double s_default_throughput_target_gbps = 5.0;

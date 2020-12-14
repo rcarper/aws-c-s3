@@ -11,7 +11,7 @@
 #include <aws/io/stream.h>
 #include <inttypes.h>
 
-static const uint64_t s_response_body_error_buf_size = KB_TO_BYTES(1);
+static const size_t s_response_body_error_buf_size = KB_TO_BYTES(1);
 
 static void s_s3_request_destroy(void *user_data);
 
@@ -146,7 +146,7 @@ int aws_s3_meta_request_init_base(
     aws_ref_count_init(&meta_request->ref_count, meta_request, s_s3_meta_request_start_destroy);
     aws_ref_count_init(&meta_request->internal_ref_count, meta_request, s_s3_meta_request_finish_destroy);
 
-    *((uint64_t *)&meta_request->part_size) = client->part_size;
+    *((size_t *)&meta_request->part_size) = client->part_size;
     meta_request->event_loop = client->event_loop;
 
     /* Keep a reference to the original message structure passed in. */

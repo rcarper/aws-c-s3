@@ -133,7 +133,7 @@ struct aws_s3_client {
 
     /* Size of parts for files when doing gets or puts.  This exists on the client as configurable option that is passed
      * to meta requests for use. */
-    const uint64_t part_size;
+    const size_t part_size;
 
     /* TLS Options to be used for each connection.  Specify NULL to not use TLS. */
     struct aws_tls_connection_options *tls_connection_options;

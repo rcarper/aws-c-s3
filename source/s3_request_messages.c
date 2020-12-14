@@ -26,8 +26,8 @@ static int s_s3_message_util_set_multipart_request_path(
     struct aws_http_message *message);
 
 static int s_s3_message_util_add_content_range_header(
-    uint64_t part_index,
-    uint64_t part_size,
+    size_t part_index,
+    size_t part_size,
     struct aws_http_message *out_message);
 
 static int s_s3_create_multipart_set_up_request_path(struct aws_allocator *allocator, struct aws_http_message *message);
@@ -38,7 +38,7 @@ struct aws_http_message *aws_s3_get_object_message_new(
     struct aws_allocator *allocator,
     struct aws_http_message *base_message,
     uint32_t part_number,
-    uint64_t part_size) {
+    size_t part_size) {
     AWS_PRECONDITION(allocator);
     AWS_PRECONDITION(base_message);
 
@@ -422,18 +422,23 @@ error_clean_up:
 
 /* Add a content-range header.*/
 static int s_s3_message_util_add_content_range_header(
-    uint64_t part_index,
-    uint64_t part_size,
+    size_t part_index,
+    size_t part_size,
     struct aws_http_message *out_message) {
     AWS_PRECONDITION(out_message);
 
-    uint64_t range_start = part_index * part_size;
-    uint64_t range_end = range_start + part_size - 1;
+    size_t range_start = part_index * part_size;
+    size_t range_end = range_start + part_size - 1;
 
     /* TODO this is more than enough space, but maybe there's a better way to do this?
      * ((2^64)-1 = 20 characters;  2*20 + length-of("bytes=-") < 128) */
     char range_value_buffer[128] = "";
-    snprintf(range_value_buffer, sizeof(range_value_buffer), "bytes=%" PRIu64 "-%" PRIu64, range_start, range_end);
+    snprintf(
+        range_value_buffer,
+        sizeof(range_value_buffer),
+        "bytes=%" PRIu64 "-%" PRIu64,
+        (uint64_t)range_start,
+        (uint64_t)range_end);
 
     struct aws_http_header range_header;
     AWS_ZERO_STRUCT(range_header);

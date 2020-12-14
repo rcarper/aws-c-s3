@@ -60,7 +60,7 @@ struct aws_s3_client_config {
     struct aws_credentials_provider *credentials_provider;
 
     /* Size of parts the files will be downloaded or uploaded in. */
-    uint64_t part_size;
+    size_t part_size;
 
     /* TLS Options to be used for each connection.  Specify NULL to not use TLS. */
     struct aws_tls_connection_options *tls_connection_options;

@@ -171,7 +171,7 @@ struct aws_s3_meta_request {
     struct aws_http_message *initial_request_message;
 
     /* Part size to use for uploads and downloads.  Passed down by the creating client. */
-    const uint64_t part_size;
+    const size_t part_size;
 
     /* Event loop used for scheduling.  Passed down by the creating client. */
     struct aws_event_loop *event_loop;
