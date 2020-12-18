@@ -722,7 +722,18 @@ static struct aws_s3_meta_request *s_s3_client_meta_request_factory(
             return aws_s3_meta_request_default_new(client->allocator, client, content_length, options);
         }
 
-        uint64_t part_size = content_length / g_s3_max_num_upload_parts;
+        uint64_t part_size_uint64 = content_length / g_s3_max_num_upload_parts;
+
+        if (part_size_uint64 > SIZE_MAX) {
+            AWS_LOGF_ERROR(
+                AWS_LS_S3_META_REQUEST,
+                "Could not create auto-ranged-put meta request; required part size of %" PRId64 " bytes is too large for platform.");
+
+            aws_raise_error(AWS_ERROR_INVALID_ARGUMENT);
+            return NULL;
+        }
+
+        size_t part_size = (size_t)part_size_uint64;
 
         if (part_size > client->max_part_size) {
             AWS_LOGF_ERROR(
@@ -733,7 +744,7 @@ static struct aws_s3_meta_request *s_s3_client_meta_request_factory(
                 client->max_part_size);
             aws_raise_error(AWS_ERROR_INVALID_ARGUMENT);
             return NULL;
-        }
+       }
 
         if (part_size < client->part_size) {
             part_size = client->part_size;
